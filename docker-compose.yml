@@ -1,0 +1,10 @@
+services:
+  logiclock:
+    build: .
+    image: logiclock:local
+    environment:
+      PYTHONPATH: /app/src
+    # Mount project for local iteration without rebuild
+    volumes:
+      - ./src:/app/src:ro
+    command: ["python", "-m", "logiclock.cli"]
