@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Protocol
 
+from .ast_utils import attribute_chain
+
 __all__ = [
     "ScenarioGenerationConfig",
     "ScenarioGenerationResult",
@@ -52,11 +54,15 @@ class ComparisonBoundaryGenerator:
         left = node.left
         right = node.comparators[0]
         if isinstance(left, (ast.Name, ast.Attribute)) and _num_const(right):
-            field = _to_field(left)
+            field = _name_or_attr_field(left)
+            if field is None:
+                return None
             n = _num_value(right)
             return (field, _boundary_values(n))
         if isinstance(right, (ast.Name, ast.Attribute)) and _num_const(left):
-            field = _to_field(right)
+            field = _name_or_attr_field(right)
+            if field is None:
+                return None
             n = _num_value(left)
             return (field, _boundary_values(n))
         return None
@@ -73,13 +79,19 @@ class BooleanFlagGenerator:
         if isinstance(body, ast.Name):
             return (body.id, [True, False])
         if isinstance(body, ast.Attribute):
-            return (_to_field(body), [True, False])
+            field = _name_or_attr_field(body)
+            if field is None:
+                return None
+            return (field, [True, False])
         if isinstance(body, ast.UnaryOp) and isinstance(body.op, ast.Not):
             inner = body.operand
             if isinstance(inner, ast.Name):
                 return (inner.id, [True, False])
             if isinstance(inner, ast.Attribute):
-                return (_to_field(inner), [True, False])
+                field = _name_or_attr_field(inner)
+                if field is None:
+                    return None
+                return (field, [True, False])
         return None
 
 
@@ -145,24 +157,23 @@ def _boundary_values(n: float | int) -> list[object]:
 
 
 def _num_const(node: ast.AST) -> bool:
-    is_constant = isinstance(node, ast.Constant)
-    return is_constant and isinstance(node.value, (int, float))
+    if not isinstance(node, ast.Constant):
+        return False
+    v = node.value
+    # bool is a subclass of int; exclude it from numeric boundaries.
+    if isinstance(v, bool):
+        return False
+    return isinstance(v, (int, float))
 
 
 def _num_value(node: ast.AST) -> float | int:
     assert isinstance(node, ast.Constant)
-    assert isinstance(node.value, (int, float))
-    return node.value
+    v = node.value
+    assert not isinstance(v, bool) and isinstance(v, (int, float))
+    return v
 
 
-def _to_field(node: ast.Name | ast.Attribute) -> str:
+def _name_or_attr_field(node: ast.Name | ast.Attribute) -> str | None:
     if isinstance(node, ast.Name):
         return node.id
-    parts: list[str] = []
-    cur: ast.AST = node
-    while isinstance(cur, ast.Attribute):
-        parts.append(cur.attr)
-        cur = cur.value
-    if isinstance(cur, ast.Name):
-        parts.append(cur.id)
-    return ".".join(reversed(parts))
+    return attribute_chain(node)

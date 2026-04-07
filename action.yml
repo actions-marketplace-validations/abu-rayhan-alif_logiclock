@@ -7,7 +7,10 @@ inputs:
     required: false
     default: "3.12"
   install-command:
-    description: "Command used to install logiclock"
+    description: >
+      Command to install logiclock in the job workspace (e.g. pip install . from a
+      checkout of this repo, or pip install logiclock / git+https URL). The
+      default suits a workflow that checks out this repository.
     required: false
     default: "pip install ."
   scan-command:
@@ -23,7 +26,9 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
         cache: pip
-        cache-dependency-path: pyproject.toml
+        cache-dependency-path: |
+          pyproject.toml
+          requirements-lock.txt
 
     - name: Install logiclock
       shell: bash

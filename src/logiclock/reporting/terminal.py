@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import NamedTuple
+
 from logiclock.core.rule_validator import Severity
 from logiclock.reporting.report_model import Report, ReportItem
 
@@ -11,6 +13,38 @@ __all__ = [
 ]
 
 _HEADER = "logiclock report"
+
+
+class _RuleGroup(NamedTuple):
+    rule_id: str
+    items: tuple[ReportItem, ...]
+
+
+class _SevBlock(NamedTuple):
+    severity: Severity
+    rule_groups: tuple[_RuleGroup, ...]
+
+
+def _severity_blocks(report: Report) -> tuple[_SevBlock, ...]:
+    """Group by severity (ERROR/WARNING/INFO), rule id; stable item order."""
+    by_sev: dict[Severity, dict[str, list[ReportItem]]] = {}
+    for item in report.items:
+        by_rule = by_sev.setdefault(item.severity, {})
+        by_rule.setdefault(item.rule_id, []).append(item)
+    order = (Severity.ERROR, Severity.WARNING, Severity.INFO)
+    blocks: list[_SevBlock] = []
+    for sev in order:
+        groups = by_sev.get(sev)
+        if not groups:
+            continue
+        rule_groups: list[_RuleGroup] = []
+        for rule_id in sorted(groups.keys()):
+            items = tuple(
+                sorted(groups[rule_id], key=lambda i: (i.code, i.message)),
+            )
+            rule_groups.append(_RuleGroup(rule_id, items))
+        blocks.append(_SevBlock(sev, tuple(rule_groups)))
+    return tuple(blocks)
 
 
 def format_report_plain(report: Report, *, color: bool = False) -> str:
@@ -45,24 +79,12 @@ def format_report_terminal(
 def _grouped_lines(report: Report) -> str:
     """Plain body: stable blank lines between severity blocks."""
     parts: list[str] = [_HEADER, ""]
-    by_sev: dict[Severity, dict[str, list[ReportItem]]] = {}
-    for item in report.items:
-        by_rule = by_sev.setdefault(item.severity, {})
-        by_rule.setdefault(item.rule_id, []).append(item)
-    order = (Severity.ERROR, Severity.WARNING, Severity.INFO)
     blocks: list[str] = []
-    for sev in order:
-        groups = by_sev.get(sev)
-        if not groups:
-            continue
-        hdr = f"== {sev.value.upper()} =="
-        buf: list[str] = [hdr]
-        for rule_id in sorted(groups.keys()):
-            buf.append(f"-- rule_id: {rule_id} --")
-            for it in sorted(
-                groups[rule_id],
-                key=lambda i: (i.code, i.message),
-            ):
+    for blk in _severity_blocks(report):
+        buf: list[str] = [f"== {blk.severity.value.upper()} =="]
+        for rg in blk.rule_groups:
+            buf.append(f"-- rule_id: {rg.rule_id} --")
+            for it in rg.items:
                 msg = it.message.replace("\n", "\n  ")
                 buf.append(f"[{it.code}] {msg}")
             buf.append("")
@@ -89,26 +111,15 @@ _SEV_STYLE = {
 
 def _format_ansi(report: Report) -> str:
     parts: list[str] = [_HEADER, ""]
-    by_sev: dict[Severity, dict[str, list[ReportItem]]] = {}
-    for item in report.items:
-        by_rule = by_sev.setdefault(item.severity, {})
-        by_rule.setdefault(item.rule_id, []).append(item)
-    order = (Severity.ERROR, Severity.WARNING, Severity.INFO)
     blocks: list[str] = []
-    for sev in order:
-        groups = by_sev.get(sev)
-        if not groups:
-            continue
-        dim, bright = _SEV_STYLE[sev]
+    for blk in _severity_blocks(report):
+        dim, bright = _SEV_STYLE[blk.severity]
         buf: list[str] = [
-            f"\033[1m\033[{bright}m== {sev.value.upper()} ==\033[0m",
+            f"\033[1m\033[{bright}m== {blk.severity.value.upper()} ==\033[0m",
         ]
-        for rule_id in sorted(groups.keys()):
-            buf.append(f"\033[{dim}m-- rule_id: {rule_id} --\033[0m")
-            for it in sorted(
-                groups[rule_id],
-                key=lambda i: (i.code, i.message),
-            ):
+        for rg in blk.rule_groups:
+            buf.append(f"\033[{dim}m-- rule_id: {rg.rule_id} --\033[0m")
+            for it in rg.items:
                 msg = it.message.replace("\n", "\n  ")
                 buf.append(f"[{it.code}] {msg}")
             buf.append("")
@@ -139,21 +150,14 @@ def _format_rich(report: Report) -> str:
     )
     con.print(_HEADER, style="bold")
     con.print()
-    by_sev: dict[Severity, dict[str, list[ReportItem]]] = {}
-    for item in report.items:
-        by_rule = by_sev.setdefault(item.severity, {})
-        by_rule.setdefault(item.rule_id, []).append(item)
-    order = (Severity.ERROR, Severity.WARNING, Severity.INFO)
     style_map = {
         Severity.ERROR: "bold red",
         Severity.WARNING: "bold yellow",
         Severity.INFO: "bold cyan",
     }
+    sev_blocks = _severity_blocks(report)
     block_text: list[str] = []
-    for sev in order:
-        groups = by_sev.get(sev)
-        if not groups:
-            continue
+    for blk in sev_blocks:
         sio = StringIO()
         c2 = Console(
             file=sio,
@@ -161,13 +165,13 @@ def _format_rich(report: Report) -> str:
             force_terminal=True,
             color_system="standard",
         )
-        c2.print(f"== {sev.value.upper()} ==", style=style_map[sev])
-        for rule_id in sorted(groups.keys()):
-            c2.print(f"-- rule_id: {rule_id} --", style="dim")
-            for it in sorted(
-                groups[rule_id],
-                key=lambda i: (i.code, i.message),
-            ):
+        c2.print(
+            f"== {blk.severity.value.upper()} ==",
+            style=style_map[blk.severity],
+        )
+        for rg in blk.rule_groups:
+            c2.print(f"-- rule_id: {rg.rule_id} --", style="dim")
+            for it in rg.items:
                 c2.print(f"  [{it.code}] {it.message}")
             c2.print()
         block_text.append(sio.getvalue().rstrip("\n"))

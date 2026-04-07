@@ -44,3 +44,11 @@ def test_unsupported_condition_is_skipped_in_basic_generator() -> None:
     assert len(out.scenarios) == 2
     assert all("user.is_premium" in row for row in out.scenarios)
     assert all("x" not in row for row in out.scenarios)
+
+
+def test_boolean_constant_is_not_numeric_boundary() -> None:
+    """``True``/``False`` are ``int`` subclasses; do not use n±1 boundaries."""
+    for expr in ("balance > True", "False < balance", "x == False"):
+        out = generate_scenarios_from_conditions([expr])
+        assert out.scenarios == ()
+        assert out.total_possible_combinations == 0
