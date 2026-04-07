@@ -13,7 +13,7 @@ from logiclock.reporting.terminal import format_report_terminal
 
 def _dist_version() -> str:
     try:
-        return importlib.metadata.version("logic-lock")
+        return importlib.metadata.version("pylogiclock")
     except importlib.metadata.PackageNotFoundError:
         from logiclock import __version__
 

@@ -7,7 +7,7 @@
 <pre>
 ==================================================
             L O G I C - L O C K
-       pip install    logic-lock
+       pip install    pylogiclock
        import         logiclock
 ==================================================
 </pre>
@@ -16,12 +16,12 @@
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-F5BD02?style=for-the-badge)](LICENSE)
-[![PyPI](https://img.shields.io/badge/install-logic--lock-006DAD?style=for-the-badge&logo=pypi&logoColor=white)](https://pypi.org/project/logic-lock/)
+[![PyPI](https://img.shields.io/badge/install-pylogiclock-006DAD?style=for-the-badge&logo=pypi&logoColor=white)](https://pypi.org/project/pylogiclock/)
 [![GitHub](https://img.shields.io/badge/GitHub-repo-24292F?style=for-the-badge&logo=github)](https://github.com/abu-rayhan-alif/logiclock)
 
 ### Rules, decorator metadata, and code — stay consistent
 
-**`pip install logic-lock`** — **import `logiclock`**
+**`pip install pylogiclock`** — **import `logiclock`** (PyPI uses `pylogiclock`; `logic-lock` is blocked as too similar to an existing name.)
 
 <br>
 
@@ -47,7 +47,7 @@ silently drift between “what the rule says” and “what the code claims.”
 ## TL;DR
 
 ```bash
-pip install logic-lock
+pip install pylogiclock
 logiclock --version
 logiclock --no-color report-sample
 ```
@@ -76,7 +76,7 @@ More examples: [`tests/test_rule_validator.py`](tests/test_rule_validator.py).
 
 | How | Command |
 |-----|---------|
-| PyPI | `pip install logic-lock` |
+| PyPI | `pip install pylogiclock` |
 | This repo | `pip install .` |
 
 CLI: `logiclock --help`
@@ -87,8 +87,8 @@ CLI: `logiclock --help`
 
 | Issue | Try |
 |-------|-----|
-| `No module named logiclock` | `pip install logic-lock` or `pip install -e .` |
-| CLI not found | Same venv; `python -m pip show logic-lock` |
+| `No module named logiclock` | `pip install pylogiclock` or `pip install -e .` |
+| CLI not found | Same venv; `python -m pip show pylogiclock` |
 | `scan` is a stub | Use the **Python API** for now |
 | Colors in CI | `logiclock --no-color ...` |
 
@@ -159,9 +159,9 @@ jobs:
 **Other repos**:
 
 ```yaml
-install-command: pip install "logic-lock @ git+https://github.com/YOUR_ORG/logiclock.git@vX.Y.Z"
+install-command: pip install "pylogiclock @ git+https://github.com/YOUR_ORG/logiclock.git@vX.Y.Z"
 ```
 
-On PyPI: use `pip install logic-lock` in `install-command`.
+On PyPI: use `pip install pylogiclock` in `install-command`.
 
 </details>

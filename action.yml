@@ -9,7 +9,7 @@ inputs:
   install-command:
     description: >
       Command to install logiclock in the job workspace (e.g. pip install . from a
-      checkout of this repo, or pip install logic-lock / git+https URL). The
+      checkout of this repo, or pip install pylogiclock / git+https URL). The
       default suits a workflow that checks out this repository.
     required: false
     default: "pip install ."

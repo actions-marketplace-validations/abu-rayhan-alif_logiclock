@@ -3,8 +3,9 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-# pip install logic-lock — Python import path remains ``logiclock``.
-name = "logic-lock"
+# pip install pylogiclock — PyPI rejects ``logic-lock`` as too similar to an existing name;
+# Python import path remains ``logiclock``.
+name = "pylogiclock"
 version = "0.2.0"
 description = "Scan and validate code with configurable logic-lock rules."
 readme = "README.md"
