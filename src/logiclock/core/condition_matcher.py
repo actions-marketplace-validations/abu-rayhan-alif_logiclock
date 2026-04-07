@@ -6,6 +6,8 @@ import ast
 from difflib import SequenceMatcher
 from dataclasses import dataclass
 
+from .ast_utils import attribute_chain
+
 __all__ = [
     "ConditionMatchResult",
     "MissingCondition",
@@ -142,19 +144,7 @@ def _identifier_tokens(expr: str) -> set[str]:
         if isinstance(n, ast.Name):
             out.add(n.id)
         elif isinstance(n, ast.Attribute):
-            chain = _attribute_chain(n)
+            chain = attribute_chain(n)
             if chain is not None:
                 out.add(chain)
     return out
-
-
-def _attribute_chain(node: ast.Attribute) -> str | None:
-    parts: list[str] = []
-    cur: ast.AST = node
-    while isinstance(cur, ast.Attribute):
-        parts.append(cur.attr)
-        cur = cur.value
-    if not isinstance(cur, ast.Name):
-        return None
-    parts.append(cur.id)
-    return ".".join(reversed(parts))

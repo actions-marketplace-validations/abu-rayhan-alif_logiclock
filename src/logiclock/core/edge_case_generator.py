@@ -50,7 +50,6 @@ class ComparisonBoundaryGenerator:
         if len(node.ops) != 1 or len(node.comparators) != 1:
             return None
         left = node.left
-        op = node.ops[0]
         right = node.comparators[0]
         if isinstance(left, (ast.Name, ast.Attribute)) and _num_const(right):
             field = _to_field(left)
@@ -60,17 +59,6 @@ class ComparisonBoundaryGenerator:
             field = _to_field(right)
             n = _num_value(left)
             return (field, _boundary_values(n))
-        if isinstance(op, (ast.Eq, ast.NotEq)):
-            left_is_field = isinstance(left, (ast.Name, ast.Attribute))
-            right_is_field = isinstance(right, (ast.Name, ast.Attribute))
-            if left_is_field and _num_const(right):
-                field = _to_field(left)
-                n = _num_value(right)
-                return (field, _boundary_values(n))
-            if right_is_field and _num_const(left):
-                field = _to_field(right)
-                n = _num_value(left)
-                return (field, _boundary_values(n))
         return None
 
 

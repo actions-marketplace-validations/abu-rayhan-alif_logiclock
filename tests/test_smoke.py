@@ -1,8 +1,19 @@
 """Smoke tests for the logiclock CLI (installed entry point)."""
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
+
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _cli_help_text(proc: subprocess.CompletedProcess[str]) -> str:
+    """Typer/Click may emit help on stdout or stderr; Rich adds ANSI escapes."""
+    combined = (proc.stdout + proc.stderr).lower()
+    plain = _ANSI_ESCAPE.sub("", combined)
+    # Rare: non-ASCII hyphen in formatted help (e.g. unicode minus).
+    return plain.replace("\u2011", "-").replace("\u2212", "-")
 
 
 def _logiclock_exe() -> str:
@@ -20,12 +31,12 @@ def test_cli_help_shows_app_and_commands() -> None:
         cwd=Path(__file__).resolve().parent.parent,
     )
     assert proc.returncode == 0, proc.stderr
-    out = proc.stdout.lower()
+    out = _cli_help_text(proc)
     assert "logiclock" in out
     assert "scan" in out
     assert "validate" in out
     assert "report-sample" in out
-    assert "no-color" in out.replace("_", "-") or "no-color" in out
+    assert "no-color" in out.replace("_", "-")
     assert "scan and validate" in out or "validate" in out
 
 

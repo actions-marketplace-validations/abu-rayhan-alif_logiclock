@@ -43,3 +43,28 @@ def test_module_mode_includes_non_decorated_functions() -> None:
     plain = next(f for f in result.functions if f.name == "plain_check")
     assert len(plain.decision_points) == 1
     assert plain.decision_points[0].condition_source == "user.is_staff"
+
+
+def test_elif_chain_reports_flat_nesting_levels(tmp_path) -> None:
+    """``elif`` is one If per orelse; depth must not climb along the chain."""
+    src = '''
+from logiclock.decorators import logic_lock
+
+@logic_lock("chain")
+def classify(u):
+    if u.a:
+        return 1
+    elif u.b:
+        return 2
+    elif u.c:
+        return 3
+    return 0
+'''
+    path = tmp_path / "elif_chain.py"
+    path.write_text(src, encoding="utf-8")
+    result = parse_module_logic(path, decorated_only=True)
+    assert len(result.functions) == 1
+    dps = result.functions[0].decision_points
+    assert len(dps) == 3
+    assert [dp.nesting_level for dp in dps] == [0, 0, 0]
+    assert [dp.condition_source for dp in dps] == ["u.a", "u.b", "u.c"]

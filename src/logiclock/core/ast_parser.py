@@ -6,6 +6,8 @@ import ast
 from dataclasses import dataclass
 from pathlib import Path
 
+from .ast_utils import attribute_chain
+
 __all__ = [
     "DecisionPoint",
     "FunctionLogic",
@@ -61,8 +63,19 @@ class _IfCollector(ast.NodeVisitor):
             ),
         )
         self._depth += 1
-        self.generic_visit(node)
+        for stmt in node.body:
+            self.visit(stmt)
         self._depth -= 1
+        if not node.orelse:
+            return
+        if len(node.orelse) == 1 and isinstance(node.orelse[0], ast.If):
+            # ``elif`` is a nested If in orelse — same chain level, not deeper.
+            self.visit(node.orelse[0])
+        else:
+            self._depth += 1
+            for stmt in node.orelse:
+                self.visit(stmt)
+            self._depth -= 1
 
 
 def parse_module_logic(
@@ -127,19 +140,7 @@ def _extract_identifiers(expr: ast.AST) -> tuple[str, ...]:
         if isinstance(n, ast.Name):
             names.add(n.id)
         elif isinstance(n, ast.Attribute):
-            full = _attribute_chain(n)
+            full = attribute_chain(n)
             if full is not None:
                 attrs.add(full)
     return tuple(sorted(names | attrs))
-
-
-def _attribute_chain(node: ast.Attribute) -> str | None:
-    parts: list[str] = []
-    cur: ast.AST = node
-    while isinstance(cur, ast.Attribute):
-        parts.append(cur.attr)
-        cur = cur.value
-    if not isinstance(cur, ast.Name):
-        return None
-    parts.append(cur.id)
-    return ".".join(reversed(parts))
