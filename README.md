@@ -1,15 +1,14 @@
 <div align="center">
 
-<pre>
-  ==============================================================
-                                                               
-                      L O G I C - L O C K                      
-                                                               
-                   pip install    logic-lock                 
-                   import         logiclock                 
-                                                               
-  ==============================================================
-</pre>
+### logic-lock
+
+```text
+==================================================
+              L O G I C - L O C K
+         pip install    logic-lock
+         import         logiclock
+==================================================
+```
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-F5BD02?style=for-the-badge)](LICENSE)

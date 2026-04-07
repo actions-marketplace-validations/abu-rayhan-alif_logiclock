@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 # pip install logic-lock — Python import path remains ``logiclock``.
 name = "logic-lock"
-version = "0.1.0"
+version = "0.2.0"
 description = "Scan and validate code with configurable logic-lock rules."
 readme = "README.md"
 license = "MIT"
