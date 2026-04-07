@@ -9,7 +9,7 @@ _ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
 
 
 def _cli_help_text(proc: subprocess.CompletedProcess[str]) -> str:
-    """Typer/Click may emit help on stdout or stderr; Rich adds ANSI escapes."""
+    """Normalize CLI help: merge streams, strip ANSI (Typer/Rich)."""
     combined = (proc.stdout + proc.stderr).lower()
     plain = _ANSI_ESCAPE.sub("", combined)
     # Rare: non-ASCII hyphen in formatted help (e.g. unicode minus).
