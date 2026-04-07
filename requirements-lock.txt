@@ -20,7 +20,7 @@ colorama==0.4.6
     #   click
     #   pytest
 flake8==7.3.0
-    # via logiclock (pyproject.toml)
+    # via logic-lock (pyproject.toml)
 iniconfig==2.3.0
     # via pytest
 markdown-it-py==4.0.0
@@ -35,13 +35,13 @@ packaging==26.0
     #   pytest
     #   wheel
 pip-tools==7.5.3
-    # via logiclock (pyproject.toml)
+    # via logic-lock (pyproject.toml)
 pluggy==1.6.0
     # via pytest
 pycodestyle==2.14.0
     # via flake8
 pydantic==2.12.5
-    # via logiclock (pyproject.toml)
+    # via logic-lock (pyproject.toml)
 pydantic-core==2.41.5
     # via pydantic
 pyflakes==3.4.0
@@ -55,15 +55,15 @@ pyproject-hooks==1.2.0
     #   build
     #   pip-tools
 pytest==8.4.2
-    # via logiclock (pyproject.toml)
+    # via logic-lock (pyproject.toml)
 rich==13.9.4
     # via
-    #   logiclock (pyproject.toml)
+    #   logic-lock (pyproject.toml)
     #   typer
 shellingham==1.5.4
     # via typer
 typer==0.24.1
-    # via logiclock (pyproject.toml)
+    # via logic-lock (pyproject.toml)
 typing-extensions==4.15.0
     # via
     #   pydantic

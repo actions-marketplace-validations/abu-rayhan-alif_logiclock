@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import importlib.metadata
+
 import typer
 
 from logiclock.reporting import exit_code_for_report, format_report_plain
@@ -9,8 +11,24 @@ from logiclock.reporting.demo import build_sample_report
 from logiclock.reporting.terminal import format_report_terminal
 
 
+def _dist_version() -> str:
+    try:
+        return importlib.metadata.version("logic-lock")
+    except importlib.metadata.PackageNotFoundError:
+        from logiclock import __version__
+
+        return str(__version__)
+
+
 def _configure(
     ctx: typer.Context,
+    version: bool = typer.Option(
+        False,
+        "--version",
+        "-V",
+        help="Show version and exit.",
+        is_eager=True,
+    ),
     no_color: bool = typer.Option(
         False,
         "--no-color",
@@ -22,6 +40,9 @@ def _configure(
         help="Exit with code 1 when a report contains ERROR (default: on).",
     ),
 ) -> None:
+    if version:
+        typer.echo(_dist_version())
+        raise typer.Exit()
     ctx.obj = {"no_color": no_color, "strict": strict}
 
 
@@ -29,6 +50,7 @@ app = typer.Typer(
     name="logiclock",
     help="Scan and validate code with configurable logic-lock rules.",
     add_completion=False,
+    invoke_without_command=True,
     callback=_configure,
 )
 
@@ -37,14 +59,22 @@ app = typer.Typer(
 def scan(ctx: typer.Context) -> None:
     """Scan the project for rule violations (stub)."""
     _ = ctx
-    typer.echo("scan: stub — no violations")
+    typer.echo(
+        "scan: stub — no violations\n"
+        "  Full scan is not wired yet; use the library API or tests. "
+        "See README “Quick start”.",
+    )
 
 
 @app.command()
 def validate(ctx: typer.Context) -> None:
     """Validate configuration or inputs (stub)."""
     _ = ctx
-    typer.echo("validate: stub — OK")
+    typer.echo(
+        "validate: stub — OK\n"
+        "  Use logiclock.core APIs from Python for metadata validation; "
+        "see README.",
+    )
 
 
 @app.command("report-sample")

@@ -22,6 +22,20 @@ def _logiclock_exe() -> str:
     return exe
 
 
+def test_cli_version_exits_zero() -> None:
+    proc = subprocess.run(
+        [_logiclock_exe(), "--version"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        cwd=Path(__file__).resolve().parent.parent,
+    )
+    assert proc.returncode == 0, proc.stderr
+    out = (proc.stdout + proc.stderr).strip()
+    assert out
+    assert out[0].isdigit() or out.startswith("0.")
+
+
 def test_cli_help_shows_app_and_commands() -> None:
     proc = subprocess.run(
         [_logiclock_exe(), "--help"],
@@ -37,6 +51,7 @@ def test_cli_help_shows_app_and_commands() -> None:
     assert "validate" in out
     assert "report-sample" in out
     assert "no-color" in out.replace("_", "-")
+    assert "--version" in out or "-V" in out
     assert "scan and validate" in out or "validate" in out
 
 
