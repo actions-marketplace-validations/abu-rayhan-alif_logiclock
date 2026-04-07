@@ -1,0 +1,34 @@
+name: "Logiclock Scan"
+description: "Install logiclock and run logiclock scan in CI"
+
+inputs:
+  python-version:
+    description: "Python version for setup-python"
+    required: false
+    default: "3.12"
+  install-command:
+    description: "Command used to install logiclock"
+    required: false
+    default: "pip install ."
+  scan-command:
+    description: "Scan command to execute"
+    required: false
+    default: "logiclock --strict --no-color scan"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: pyproject.toml
+
+    - name: Install logiclock
+      shell: bash
+      run: ${{ inputs.install-command }}
+
+    - name: Run logiclock scan
+      shell: bash
+      run: ${{ inputs.scan-command }}

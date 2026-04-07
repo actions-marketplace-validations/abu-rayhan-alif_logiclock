@@ -15,6 +15,17 @@ permissions:
   contents: read
 
 jobs:
+  logiclock-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Logiclock scan
+        uses: ./
+        with:
+          python-version: "3.12"
+          install-command: pip install .
+          scan-command: logiclock --strict --no-color scan
+
   lint-and-test:
     runs-on: ubuntu-latest
     steps:

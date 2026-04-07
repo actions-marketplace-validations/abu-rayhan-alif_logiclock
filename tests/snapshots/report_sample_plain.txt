@@ -1,0 +1,13 @@
+logiclock report
+
+== ERROR ==
+-- rule_id: premium_discount --
+[RESULT_MISMATCH] Declared result 'discount=5' does not match schema result 'discount=10'
+
+== WARNING ==
+-- rule_id: premium_discount --
+[MISSING_SCHEMA_CONDITION] Schema condition 'user.is_premium' is not listed in implementation metadata conditions
+
+== INFO ==
+-- rule_id: checkout --
+[SCAN_NOTE] Stub scan completed (no files examined).

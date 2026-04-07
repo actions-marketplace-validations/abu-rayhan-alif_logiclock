@@ -1,0 +1,5 @@
+100 < user.balance => user.balance > 100
+user.balance > 100 => user.balance > 100
+user.is_premium and cart.total > 100 => user.is_premium and cart.total > 100
+cart.total == order.total => cart.total == order.total
+order.total == cart.total => cart.total == order.total
