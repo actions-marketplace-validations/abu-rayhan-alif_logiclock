@@ -1,10 +1,17 @@
 """CLI tests for `logiclock graph` command."""
 
 from pathlib import Path
+import re
 
 from typer.testing import CliRunner
 
 from logiclock.cli import app
+
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain(text: str) -> str:
+    return _ANSI_ESCAPE.sub("", text).lower()
 
 _FIXTURE_MODULE = (
     Path(__file__).resolve().parent / "fixtures" / "sample_module.py"
@@ -86,7 +93,7 @@ def test_graph_command_output_requires_force_when_file_exists(
         ],
     )
     assert result.exit_code != 0
-    assert "--force" in result.output
+    assert "--force" in _plain(result.output)
 
 
 def test_graph_command_rejects_missing_output_directory() -> None:

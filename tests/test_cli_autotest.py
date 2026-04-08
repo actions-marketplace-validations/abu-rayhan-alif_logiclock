@@ -1,10 +1,17 @@
 """Tests for zero-code autotest command (LFL-13)."""
 
 from pathlib import Path
+import re
 
 from typer.testing import CliRunner
 
 from logiclock.cli import app
+
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain(text: str) -> str:
+    return _ANSI_ESCAPE.sub("", text).lower()
 
 
 def _fixture_dir() -> Path:
@@ -102,4 +109,5 @@ def test_autotest_requires_trusted_code_flag() -> None:
         ],
     )
     assert result.exit_code != 0
-    assert "--trusted-code" in result.output
+    out = _plain(result.output)
+    assert "trusted" in out

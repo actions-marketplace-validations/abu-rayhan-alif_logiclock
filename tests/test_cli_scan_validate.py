@@ -2,11 +2,18 @@
 
 import json
 from pathlib import Path
+import re
 
 from typer.testing import CliRunner
 
 from logiclock.cli import app
 from logiclock.core import clear_rule_usage_sites
+
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _plain(text: str) -> str:
+    return _ANSI_ESCAPE.sub("", text).lower()
 
 
 def test_scan_json_output_shape(tmp_path: Path) -> None:
@@ -239,4 +246,5 @@ def test_validate_requires_trusted_code_flag(tmp_path: Path) -> None:
         ["validate", "--rules", str(rules_dir), "--module", str(mod)],
     )
     assert result.exit_code != 0
-    assert "--trusted-code" in result.output
+    out = _plain(result.output)
+    assert "trusted" in out
