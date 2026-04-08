@@ -25,7 +25,7 @@ inputs:
   install-command:
     description: >
       Install pylogiclock from PyPI (default) or pin/git as needed.
-      Example: pip install pylogiclock==0.2.0
+      Example: pip install pylogiclock==0.3.0
     required: false
     default: "pip install pylogiclock"
   scan-command:
