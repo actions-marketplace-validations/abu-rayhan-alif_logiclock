@@ -1,0 +1,5 @@
+{
+  "rule_id": "autotest_discount",
+  "conditions": ["amount > 100"],
+  "result": "ok"
+}

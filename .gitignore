@@ -27,6 +27,7 @@ build/
 .coverage
 htmlcov/
 .mypy_cache/
+.logiclock_scan_cache.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,venv,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,venv,git

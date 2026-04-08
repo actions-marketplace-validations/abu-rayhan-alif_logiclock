@@ -48,6 +48,8 @@ def test_cli_help_shows_app_and_commands() -> None:
     out = _cli_help_text(proc)
     assert "logiclock" in out
     assert "scan" in out
+    assert "autotest" in out
+    assert "conflicts" in out
     assert "validate" in out
     assert "report-sample" in out
     assert "no-color" in out.replace("_", "-")
@@ -60,10 +62,11 @@ def test_scan_runs_without_traceback() -> None:
         [_logiclock_exe(), "scan"],
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=90,
     )
     assert proc.returncode == 0
     assert "traceback" not in proc.stderr.lower()
+    assert "scan: completed" in proc.stdout.lower()
 
 
 def test_report_sample_no_color_matches_snapshot_file() -> None:

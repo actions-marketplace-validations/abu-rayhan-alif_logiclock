@@ -1,0 +1,9 @@
+{
+  "rule_id": "transfer_limit",
+  "description": "Allow transfer when amount is within account limit.",
+  "conditions": [
+    "account.is_active",
+    "amount <= account.transfer_limit"
+  ],
+  "result": "allowed"
+}

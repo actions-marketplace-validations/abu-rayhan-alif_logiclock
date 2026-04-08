@@ -1,0 +1,9 @@
+{
+  "rule_id": "kyc_transfer_limit",
+  "description": "Enforce transfer caps by KYC level.",
+  "conditions": [
+    "user.kyc_level in ['basic', 'full']",
+    "amount <= user.daily_limit"
+  ],
+  "result": "approved"
+}

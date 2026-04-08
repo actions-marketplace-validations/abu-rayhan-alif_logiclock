@@ -84,7 +84,7 @@ def logic_lock(
     meta = _merge_meta(rule_id, version, result, conditions)
 
     def decorator(fn: F) -> F:
-        record_rule_usage_from_callable(fn, rule_id, result)
+        record_rule_usage_from_callable(fn, rule_id, result, conditions)
 
         @functools.wraps(fn)
         def wrapper(*args: Any, **kwargs: Any) -> Any:

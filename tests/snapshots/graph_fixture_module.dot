@@ -1,15 +1,15 @@
 digraph LogicFlow {
   rankdir=TB;
   node [fontname="Arial"];
-  fn_apply_discount [shape=box, label="apply_discount()"];
-  fn_apply_discount_if_1 [shape=diamond, label="user.is_premium"];
-  fn_apply_discount -> fn_apply_discount_if_1;
-  fn_apply_discount_if_1 -> fn_apply_discount [label="depth=0"];
-  fn_apply_discount_if_2 [shape=diamond, label="cart.total > 100"];
-  fn_apply_discount_if_1 -> fn_apply_discount_if_2 [label="next"];
-  fn_apply_discount_if_2 -> fn_apply_discount [label="depth=1"];
-  fn_plain_check [shape=box, label="plain_check()"];
-  fn_plain_check_if_1 [shape=diamond, label="user.is_staff"];
-  fn_plain_check -> fn_plain_check_if_1;
-  fn_plain_check_if_1 -> fn_plain_check [label="depth=0"];
+  fn_apply_discount_5 [shape=box, label="apply_discount()"];
+  fn_apply_discount_5_if_1 [shape=diamond, label="user.is_premium"];
+  fn_apply_discount_5 -> fn_apply_discount_5_if_1;
+  fn_apply_discount_5_if_1 -> fn_apply_discount_5 [label="depth=0"];
+  fn_apply_discount_5_if_2 [shape=diamond, label="cart.total > 100"];
+  fn_apply_discount_5_if_1 -> fn_apply_discount_5_if_2 [label="next"];
+  fn_apply_discount_5_if_2 -> fn_apply_discount_5 [label="depth=1"];
+  fn_plain_check_15 [shape=box, label="plain_check()"];
+  fn_plain_check_15_if_1 [shape=diamond, label="user.is_staff"];
+  fn_plain_check_15 -> fn_plain_check_15_if_1;
+  fn_plain_check_15_if_1 -> fn_plain_check_15 [label="depth=0"];
 }

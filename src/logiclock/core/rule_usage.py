@@ -24,6 +24,7 @@ class RuleUsageSite:
     file: str
     line: int
     qualname: str
+    conditions_declared: tuple[str, ...] = ()
 
 
 def clear_rule_usage_sites() -> None:
@@ -40,6 +41,7 @@ def record_rule_usage_from_callable(
     fn: Any,
     rule_id: str,
     result: str | None,
+    conditions: list[str] | None = None,
 ) -> None:
     """Record definition location and declared ``result`` (if any)."""
     code = getattr(fn, "__code__", None)
@@ -57,5 +59,6 @@ def record_rule_usage_from_callable(
             file=file,
             line=line,
             qualname=qualname,
+            conditions_declared=tuple(conditions or ()),
         ),
     )

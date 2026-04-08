@@ -1,0 +1,9 @@
+{
+  "rule_id": "fraud_queue_gate",
+  "description": "Route high-risk transactions to review queue.",
+  "conditions": [
+    "transaction.amount > 5000",
+    "transaction.risk_score >= 80"
+  ],
+  "result": "send_review_queue"
+}

@@ -1,12 +1,12 @@
 flowchart TD
-  fn_apply_discount["apply_discount()"]
-  fn_apply_discount_if_1{"user.is_premium"}
-  fn_apply_discount --> fn_apply_discount_if_1
-  fn_apply_discount_if_1 -->|depth=0| fn_apply_discount
-  fn_apply_discount_if_2{"cart.total > 100"}
-  fn_apply_discount_if_1 -->|next| fn_apply_discount_if_2
-  fn_apply_discount_if_2 -->|depth=1| fn_apply_discount
-  fn_plain_check["plain_check()"]
-  fn_plain_check_if_1{"user.is_staff"}
-  fn_plain_check --> fn_plain_check_if_1
-  fn_plain_check_if_1 -->|depth=0| fn_plain_check
+  fn_apply_discount_5["apply_discount()"]
+  fn_apply_discount_5_if_1{"user.is_premium"}
+  fn_apply_discount_5 --> fn_apply_discount_5_if_1
+  fn_apply_discount_5_if_1 -->|depth=0| fn_apply_discount_5
+  fn_apply_discount_5_if_2{"cart.total > 100"}
+  fn_apply_discount_5_if_1 -->|next| fn_apply_discount_5_if_2
+  fn_apply_discount_5_if_2 -->|depth=1| fn_apply_discount_5
+  fn_plain_check_15["plain_check()"]
+  fn_plain_check_15_if_1{"user.is_staff"}
+  fn_plain_check_15 --> fn_plain_check_15_if_1
+  fn_plain_check_15_if_1 -->|depth=0| fn_plain_check_15

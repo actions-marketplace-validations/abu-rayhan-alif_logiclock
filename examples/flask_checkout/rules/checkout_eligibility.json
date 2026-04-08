@@ -1,0 +1,9 @@
+{
+  "rule_id": "checkout_eligibility",
+  "description": "Allow checkout only for active accounts with valid cart.",
+  "conditions": [
+    "user.is_active",
+    "cart.total > 0"
+  ],
+  "result": "eligible"
+}

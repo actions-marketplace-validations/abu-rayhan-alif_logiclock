@@ -2,9 +2,12 @@
 
 from logiclock.core import (
     DeclaredResultConflict,
+    OverlappingPredicateConflict,
     clear_rule_usage_sites,
     detect_declared_result_conflicts,
+    detect_overlapping_predicate_conflicts,
     format_declared_result_conflict,
+    format_overlapping_predicate_conflict,
 )
 from logiclock.decorators import logic_lock
 
@@ -101,3 +104,66 @@ def test_detect_with_explicit_sites_independent_of_global() -> None:
     conflicts = detect_declared_result_conflicts(sites)
     assert len(conflicts) == 1
     assert conflicts[0].distinct_results == ("10%", "5%")
+
+
+def test_multi_file_overlapping_conditions_conflict_cites_both_paths() -> None:
+    from pathlib import Path
+
+    from logiclock.core.rule_usage import RuleUsageSite
+
+    root = Path(__file__).resolve().parent / "fixtures" / "conflicts"
+    left_file = str(root / "module_checkout.py")
+    right_file = str(root / "module_payout.py")
+    sites = (
+        RuleUsageSite(
+            rule_id="decision_route",
+            result_declared="allow_checkout",
+            file=left_file,
+            line=4,
+            qualname="checkout_route",
+            conditions_declared=("user.is_verified", "risk_score < 50"),
+        ),
+        RuleUsageSite(
+            rule_id="decision_route",
+            result_declared="block_payout",
+            file=right_file,
+            line=4,
+            qualname="payout_route",
+            conditions_declared=("user.is_verified", "daily_limit_exceeded"),
+        ),
+    )
+    conflicts = detect_overlapping_predicate_conflicts(sites)
+    assert len(conflicts) == 1
+    conflict = conflicts[0]
+    assert isinstance(conflict, OverlappingPredicateConflict)
+    assert conflict.rule_id == "decision_route"
+    assert conflict.overlapping_conditions == ("user.is_verified",)
+    message = format_overlapping_predicate_conflict(conflict)
+    assert "allow_checkout" in message
+    assert "block_payout" in message
+    assert left_file.replace("\\", "/") in message.replace("\\", "/")
+    assert right_file.replace("\\", "/") in message.replace("\\", "/")
+
+
+def test_overlapping_conflict_detector_guardrail() -> None:
+    from logiclock.core.rule_usage import RuleUsageSite
+
+    sites = tuple(
+        RuleUsageSite(
+            rule_id="r",
+            result_declared="a" if i % 2 == 0 else "b",
+            file=f"f{i}.py",
+            line=i + 1,
+            qualname=f"fn{i}",
+            conditions_declared=("same_condition",),
+        )
+        for i in range(20)
+    )
+    try:
+        detect_overlapping_predicate_conflicts(sites, max_pair_checks=10)
+    except RuntimeError as exc:
+        assert "pair comparison limit exceeded" in str(exc)
+    else:
+        raise AssertionError(
+            "guardrail should raise when pair checks exceed limit"
+        )

@@ -1,0 +1,9 @@
+{
+  "rule_id": "feature_gate",
+  "description": "Enable feature only for allowlisted tenants.",
+  "conditions": [
+    "tenant.is_paid",
+    "feature_name in tenant.enabled_features"
+  ],
+  "result": "enabled"
+}
